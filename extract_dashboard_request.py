@@ -1,12 +1,32 @@
 import pandas as pd
 import re
 from datetime import datetime
+import sys
 
 # Enter path to csv file containing emails
 input_csv = input("Enter the path to the csv file: ")
 
-# Read csv file
-df = pd.read_csv(input_csv)
+# Strip whitespace and leading/trailing double quotes
+input_csv = input_csv.strip().strip('"')
+
+# Read csv file with exception handling
+try:
+    df = pd.read_csv(input_csv)
+except FileNotFoundError:
+    print(f"Error: The file '{input_csv}' was not found.")
+    sys.exit(1)
+except pd.errors.EmptyDataError:
+    print(f"Error: The file '{input_csv}' is empty or not a valid CSV.")
+    sys.exit(1)
+except pd.errors.ParserError:
+    print(f"Error: The file '{input_csv}' could not be parsed as a CSV.")
+    sys.exit(1)
+except PermissionError:
+    print(f"Error: Permission denied when trying to read '{input_csv}'.")
+    sys.exit(1)
+except Exception as e:
+    print(f"An unexpected error occurred while reading the file: {e}")
+    sys.exit(1)
 
 # Filter emails that contain "Share this report"
 df_filtered = df[df['body'].str.contains('Share this report', case = False, na=False)]
