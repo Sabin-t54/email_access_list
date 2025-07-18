@@ -64,15 +64,29 @@ def extract_email_details(body):
     sent_match = re.search(r'Sent:\s*([^\n\r]+)', last_msg)
     sent_date = sent_match.group(1).strip() if sent_match else None
 
+    parsed = False
     if sent_date:
         for fmt in formats:
             try:
                 sent_date = datetime.strptime(sent_date, fmt).strftime("%m/%d/%Y")
+                parsed = True
                 break
-            except ValueError:
+            except Exception:
                 continue
-    else:
-        sent_date = pd.NaT  # or "" if you prefer an empty string
+    
+    # If not parsed, use fallback_date (and format it if it's a datetime)
+    if not parsed or not sent_date:
+        try:
+            if isinstance(fallback_date, datetime):
+                sent_date = fallback_date.strftime("%m/%d/%Y")
+            else:
+                sent_date_dt = pd.to_datetime(fallback_date, errors='coerce')
+                if pd.isnull(sent_date_dt):
+                    sent_date = None
+                else:
+                    sent_date = sent_date_dt.strftime("%m/%d/%Y")
+        except Exception:
+            sent_date = None
 
     # Extract email after "Share this report" in last_msg
     after_share = last_msg.split("Share this report", 1)[-1]
@@ -86,7 +100,10 @@ def extract_email_details(body):
     return pd.Series([sent_date, email, dashboard], index=['Requested Date', 'Email', 'Dashboard'])
 
 # Apply function to extract requested date, email, and dashboard from email body
-extracted_df = df_filtered['body'].apply(extract_email_details)
+extracted_df = df_filtered.apply(
+    lambda row: extract_email_details(row['body'], row['Date']),
+    axis=1
+)
 
 # After extracted_df is created:
 extracted_df['Requested Date'] = pd.to_datetime(extracted_df['Requested Date'], errors='coerce')
