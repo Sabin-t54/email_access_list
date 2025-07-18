@@ -31,6 +31,16 @@ except Exception as e:
 # Filter emails that contain "Share this report"
 df_filtered = df[df['body'].str.contains('Share this report', case = False, na=False)]
 
+def safe_split(body):
+    try:
+        if isinstance(body, str):
+            return re.split(r'\n(?:From: |\_{5,}|\-{5,})', body.strip())
+        else:
+            return []
+    except Exception as e:
+        print(f"Error processing body: {e}\nBody: {body}")
+        return []
+    
 # Function to extract requested date, email, and dashboard from email body
 def extract_email_details(body):
     formats = [
@@ -38,7 +48,7 @@ def extract_email_details(body):
         '%A, %B %d, %Y %H:%M'      # 24-hour without AM/PM
     ]
     
-    messages = re.split(r'\n(?:From: |\_{5,}|\-{5,})', body.strip())
+    messages = safe_split(body)
 
     last_msg = None
     for msg in reversed(messages):
@@ -53,12 +63,15 @@ def extract_email_details(body):
     # Extract Sent date from last_msg
     sent_match = re.search(r'Sent:\s*([^\n\r]+)', last_msg)
     sent_date = sent_match.group(1).strip() if sent_match else None
-    for fmt in formats:
-        try:
-            sent_date = datetime.strptime(sent_date, fmt).strftime("%m/%d/%Y")
-            break
-        except ValueError:
-            continue
+    if sent_date:
+        for fmt in formats:
+            try:
+                sent_date = datetime.strptime(sent_date, fmt).strftime("%m/%d/%Y")
+                break
+            except ValueError:
+                continue
+    else:
+        sent_date = pd.NaT  # or "" if you prefer an empty string
 
     # Extract email after "Share this report" in last_msg
     after_share = last_msg.split("Share this report", 1)[-1]
