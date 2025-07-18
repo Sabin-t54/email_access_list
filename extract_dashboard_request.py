@@ -42,7 +42,7 @@ def safe_split(body):
         return []
     
 # Function to extract requested date, email, and dashboard from email body
-def extract_email_details(body):
+def extract_email_details(body, fallback_date):
     formats = [
         '%A, %B %d, %Y %I:%M %p',  # 12-hour with AM/PM
         '%A, %B %d, %Y %H:%M'      # 24-hour without AM/PM
