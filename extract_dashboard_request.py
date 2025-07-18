@@ -63,6 +63,7 @@ def extract_email_details(body):
     # Extract Sent date from last_msg
     sent_match = re.search(r'Sent:\s*([^\n\r]+)', last_msg)
     sent_date = sent_match.group(1).strip() if sent_match else None
+
     if sent_date:
         for fmt in formats:
             try:
@@ -78,7 +79,7 @@ def extract_email_details(body):
     email_match = re.search(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}', after_share)
     email = email_match.group() if email_match else None
 
-        # Extract dashboard name from last_msg
+    # Extract dashboard name from last_msg
     dashboard_match = re.search(r'([A-Za-z0-9\s\-\.]+Dashboard\s[\d\.]+(?:\s*\[[^\]]*\])?)', last_msg)
     dashboard = dashboard_match.group(1).strip() if dashboard_match else None
 
@@ -86,6 +87,9 @@ def extract_email_details(body):
 
 # Apply function to extract requested date, email, and dashboard from email body
 extracted_df = df_filtered['body'].apply(extract_email_details)
+
+# After extracted_df is created:
+extracted_df['Requested Date'] = pd.to_datetime(extracted_df['Requested Date'], errors='coerce')
 
 # Group by email and dashboard and get the minimum requested date (helps to avoid duplicate requests or email threads)
 grouped = (
