@@ -108,13 +108,22 @@ extracted_df = df_filtered.apply(
 # After extracted_df is created:
 extracted_df['Requested Date'] = pd.to_datetime(extracted_df['Requested Date'], errors='coerce')
 
-# Group by email and dashboard and get the minimum requested date (helps to avoid duplicate requests or email threads)
-grouped = (
+# Updated Dashboard Names + error handling
+extracted_df['Dashboard'] = extracted_df['Dashboard'].replace({
+    'More - Dashboard 2.4': 'Total Wine & More - Dashboard 2.4',
+    'More - Dashboard 2.3': 'Total Wine & More - Dashboard 2.3',
+    'iProspect Industry Health - Dashboard 2.4': 'Dentsu Industry Health - Dashboard 2.4',
+    'requesting access to the Dentsu Industry - FiServ Dashboard 2.4': 'Dentsu Industry FiServ - Dashboard 2.4',
+    'iProspect Industry Retail - Dashboard 2.4': 'Dentsu Industry Retail - Dashboard 2.4'
+})
+
+# Group by email and get the minimum requested date, then sort by requested date
+email_first_requested = (
     extracted_df
-    .dropna(subset=['Email', 'Dashboard'])  # optional, drop incomplete rows
+    .dropna(subset=['Email', 'Dashboard'])
     .groupby(['Email', 'Dashboard'], as_index=False)
     .agg({'Requested Date': 'min'})
+    .sort_values('Requested Date')
 )
-
 # Save to csv
-grouped.to_csv("email_list.csv", index=False)
+email_first_requested.to_csv("email_first_requested_date.csv", index=False)
