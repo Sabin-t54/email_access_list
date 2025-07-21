@@ -108,13 +108,14 @@ extracted_df = df_filtered.apply(
 # After extracted_df is created:
 extracted_df['Requested Date'] = pd.to_datetime(extracted_df['Requested Date'], errors='coerce')
 
-# Group by email and dashboard and get the minimum requested date (helps to avoid duplicate requests or email threads)
-grouped = (
+# Group by email and get the minimum requested date, then sort by requested date
+email_first_requested = (
     extracted_df
-    .dropna(subset=['Email', 'Dashboard'])  # optional, drop incomplete rows
-    .groupby(['Email', 'Dashboard'], as_index=False)
+    .dropna(subset=['Email'])
+    .groupby(['Email'], as_index=False)
     .agg({'Requested Date': 'min'})
+    .sort_values('Requested Date')
 )
 
 # Save to csv
-grouped.to_csv("email_list.csv", index=False)
+email_first_requested.to_csv("email_first_requested_date.csv", index=False)
