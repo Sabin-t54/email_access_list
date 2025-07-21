@@ -117,4 +117,4 @@ grouped = (
 )
 
 # Save to csv
-grouped.to_csv("requested_date.csv", index=False)
+grouped.to_csv("email_list.csv", index=False)
