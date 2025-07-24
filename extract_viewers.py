@@ -10,7 +10,7 @@ creds = flow.run_local_server(port=0)
 
 active_dashboard_list = [
     'American Express - Dashboard 2.4',
-    'Ashley Home Furniture - Dashboard 2.4',
+    'Ashley Furniture Homestore - Dashboard 2.4',
     'Care.com - Dashboard 2.4',
     'Care Test & Learn - Dashboard 2.4',
     'Cleveland Clinic UK - Dashboard 2.4',
@@ -27,9 +27,10 @@ active_dashboard_list = [
     'L.L.Bean - Dashboard 2.4',
     'Netskope - Dashboard 2.4',
     'Sweetwater - Dashboard 2.4',
+    'Sweetwater Test & Learn - Dashboard 2.4',
     'UPMC - Dashboard 2.4',
     'Vanguard - Dashboard 2.4',
-    'WorkWise & Labor Lawn Posters - Dashboard 2.4',
+    'WorkWise & Labor Law Posters - Dashboard 2.4',
     'IKEA - Dashboard 2.4',
     'Propper - Dashboard 2.4',
     'Etsy - Dashboard 2.4',
@@ -43,6 +44,7 @@ active_dashboard_list = [
     'Tiffany & Co - Dashboard 2.4',
     'Bank of America - Dashboard 2.4',
     'Sunday Natural - Dashboard 2.4',
+    'Protective Life - Dashboard 2.4'
 ]
 
 active_dashboard_report_link = {}
